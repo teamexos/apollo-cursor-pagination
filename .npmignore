@@ -1,3 +1,6 @@
-/src
-/tests
-/node_modules
+src
+.github
+.idea
+.prettier*
+.eslintrc.js
+.tsconfig.js
