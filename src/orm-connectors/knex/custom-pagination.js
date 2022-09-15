@@ -166,7 +166,7 @@ const removeNodesFromBeginning = (nodesAccessor, last, { orderColumn, ascOrDesc,
 
 
 const getNodesLength = async (nodesAccessor) => {
-  const counts = await nodesAccessor.clone().clearSelect().count('*');
+  const counts = await nodesAccessor.clone().clearSelect().clearOrder().count('*');
   const result = counts.reduce((prev, curr) => {
     const currCount = curr.count || curr['count(*)'];
     if (!currCount) return prev;
