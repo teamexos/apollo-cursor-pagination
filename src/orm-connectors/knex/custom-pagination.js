@@ -87,8 +87,10 @@ const buildRemoveNodesFromBeforeOrAfter = (beforeOrAfter) => {
     }, (prev, isArray) => {
       // Result is sorted by primaryKey as the last column
       const comparator = getComparator(ascOrDesc);
-      const lastOrderColumn = isArray ? orderColumn.pop() : orderColumn;
-      const lastValue = columnValue.pop();
+      const lastOrderColumn = isArray
+        ? orderColumn[orderColumn.length - 1]
+        : orderColumn;
+      const lastValue = columnValue[columnValue.length - 1]; // If value is null, we are forced to filter by id instead
 
       // If value is null, we are forced to filter by primaryKey instead
       const operation = (isAggregateFn && isAggregateFn(lastOrderColumn)) ? 'orHavingRaw' : 'orWhereRaw';
@@ -164,7 +166,7 @@ const removeNodesFromBeginning = (nodesAccessor, last, { orderColumn, ascOrDesc,
 
 
 const getNodesLength = async (nodesAccessor) => {
-  const counts = await nodesAccessor.clone().clearSelect().count('*');
+  const counts = await nodesAccessor.clone().clearSelect().clearOrder().count('*');
   const result = counts.reduce((prev, curr) => {
     const currCount = curr.count || curr['count(*)'];
     if (!currCount) return prev;

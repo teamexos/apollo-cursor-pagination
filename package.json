@@ -1,6 +1,6 @@
 {
-  "name": "@pocket-tools/apollo-cursor-pagination",
-  "version": "1.1.1",
+  "name": "@teamexos/apollo-cursor-pagination",
+  "version": "2.0.0",
   "description": "Relay's Connection implementation for Apollo Server GraphQL library with primary key support for cursor generation.",
   "keywords": [
     "apollo",
@@ -30,15 +30,15 @@
     "eslint-plugin-import": "^2.14.0",
     "eslint-plugin-jest": "^21.25.0",
     "regenerator-runtime": "^0.12.1",
-    "semantic-release": "^19.0.2"
+    "semantic-release": "^19.0.5"
   },
   "directories": {
     "test": "tests"
   },
   "bugs": {
-    "url": "https://github.com/Pocket/apollo-cursor-pagination/issues"
+    "url": "https://github.com/teamexos/apollo-cursor-pagination/issues"
   },
-  "homepage": "https://github.com/Pocket/apollo-cursor-pagination#readme",
+  "homepage": "https://github.com/teamexos/apollo-cursor-pagination#readme",
   "publishConfig": {
     "cache": "~/.npm",
     "access": "public"
