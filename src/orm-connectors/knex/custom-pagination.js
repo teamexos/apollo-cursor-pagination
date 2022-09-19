@@ -191,7 +191,7 @@ const convertNodesToEdges = (nodes, _, {
 }) => nodes.map((node) => {
   const dataValue = operateOverScalarOrArray('', orderColumn, (orderBy, index, prev) => {
     const nodeValue = node[orderBy];
-    const result = `${prev}${index ? ARRAY_DATA_SEPARATION_TOKEN : ''}${JSON.stringify(nodeValue)}`;
+    const result = `${prev !== 'undefined' ? prev : ''}${prev !== 'undefined' && index ? ARRAY_DATA_SEPARATION_TOKEN : ''}${JSON.stringify(nodeValue)}`;
     return result;
   });
 
