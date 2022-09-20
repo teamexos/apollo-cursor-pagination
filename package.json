@@ -12,7 +12,7 @@
   "private": false,
   "scripts": {
     "build": "babel src --out-dir dist",
-    "release": "npm publish && git push origin head --tags"
+    "release": "npm run build && npm publish && git push origin head --tags"
   },
   "devDependencies": {
     "@babel/cli": "^7.1.2",
