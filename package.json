@@ -11,7 +11,8 @@
   "license": "MIT",
   "private": false,
   "scripts": {
-    "build": "babel src --out-dir dist"
+    "build": "babel src --out-dir dist",
+    "release": "npm run build && npm publish && git push origin head --tags"
   },
   "devDependencies": {
     "@babel/cli": "^7.1.2",
@@ -41,7 +42,8 @@
   "homepage": "https://github.com/teamexos/apollo-cursor-pagination#readme",
   "publishConfig": {
     "cache": "~/.npm",
-    "access": "public"
+    "access": "public",
+    "registry": "https://npm.pkg.github.com"
   },
   "release": {
     "branches": [
@@ -60,8 +62,5 @@
       ]
     ]
   },
-  "repository": {
-    "type": "git",
-    "url": "git@github.com:Pocket/apollo-cursor-pagination.git"
-  }
+  "repository": "github:teamexos/apollo-cursor-pagination"
 }
