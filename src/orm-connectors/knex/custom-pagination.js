@@ -191,6 +191,9 @@ const convertNodesToEdges = (nodes, _, {
 }) => nodes.map((node) => {
   const dataValue = operateOverScalarOrArray('', orderColumn, (orderBy, index, prev) => {
     const nodeValue = node[orderBy];
+    if (nodeValue === undefined) {
+      throw new Error(`Could not find ${orderBy} in the node to orderBy`);
+    }
     const result = `${prev}${index ? ARRAY_DATA_SEPARATION_TOKEN : ''}${JSON.stringify(nodeValue)}`;
     return result;
   });
