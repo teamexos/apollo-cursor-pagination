@@ -151,7 +151,7 @@ Do not publish using yarn, as it doesn't publishes all dependencies. Use `npm pu
 
 2- `cd tests/test-app`
 
-3- `npm link @pocket-tools/apollo-cursor-pagination`
+3- `npm link @teamexos/apollo-cursor-pagination`
 
 2- `npm install`
 
