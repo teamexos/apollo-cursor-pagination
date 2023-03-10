@@ -1,9 +1,9 @@
 const faker = require('faker');
 const Cat = require('../../src/models/Cat');
 
-exports.seed = function (knex, Promise) {
+exports.seed = (knex, Promise) =>
   // Deletes ALL existing entries
-  return knex('cats')
+  knex('cats')
     .del()
     .then(async () => {
       // Inserts seed entries
@@ -28,4 +28,3 @@ exports.seed = function (knex, Promise) {
         id: 4,
       });
     });
-};

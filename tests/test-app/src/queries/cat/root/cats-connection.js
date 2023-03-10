@@ -10,7 +10,10 @@ export default async (_, args) => {
   const orderBy = args.orderBy || args.orderByMultiple;
   const orderDirection = args.orderDirection || args.orderDirectionMultiple;
 
-  const baseQuery = Cat.query().sum('id as idsum').select('cats.*').groupBy('id');
+  const baseQuery = Cat.query()
+    .sum('id as idsum')
+    .select('cats.*')
+    .groupBy('id');
   const paginate = args.useOffsetPagination ? offsetPaginator : knexPaginator;
   const result = await paginate(
     baseQuery,
@@ -20,9 +23,10 @@ export default async (_, args) => {
       orderDirection,
     },
     {
-      isAggregateFn: column => column === 'idsum',
-      formatColumnFn: column => (column === 'idsum' ? Cat.knex().raw('sum(id)') : column),
-      modifyEdgeFn: edge => ({
+      isAggregateFn: (column) => column === 'idsum',
+      formatColumnFn: (column) =>
+        column === 'idsum' ? Cat.knex().raw('sum(id)') : column,
+      modifyEdgeFn: (edge) => ({
         ...edge,
         custom: 'foo',
       }),

@@ -51,8 +51,9 @@ describe('getCatsByOwner root query', () => {
       const response = await graphqlQuery(app, query);
       expect(response.body.errors).not.toBeDefined();
       expect(response.body.data.catsConnection.edges).toHaveLength(2);
-      expect(response.body.data.catsConnection.edges.map(edge => edge.node.name))
-        .toEqual([cat1.name, cat2.name]);
+      expect(
+        response.body.data.catsConnection.edges.map((edge) => edge.node.name),
+      ).toEqual([cat1.name, cat2.name]);
       cursor = response.body.data.catsConnection.edges[0].cursor;
     });
 
@@ -73,8 +74,9 @@ describe('getCatsByOwner root query', () => {
       const response = await graphqlQuery(app, query);
       expect(response.body.errors).not.toBeDefined();
       expect(response.body.data.catsConnection.edges).toHaveLength(2);
-      expect(response.body.data.catsConnection.edges.map(edge => edge.node.name))
-        .toEqual([cat2.name, cat3.name]);
+      expect(
+        response.body.data.catsConnection.edges.map((edge) => edge.node.name),
+      ).toEqual([cat2.name, cat3.name]);
     });
 
     it('brings page info correctly', async () => {
@@ -89,7 +91,9 @@ describe('getCatsByOwner root query', () => {
       `;
       const response = await graphqlQuery(app, query);
       expect(response.body.errors).not.toBeDefined();
-      expect(response.body.data.catsConnection.pageInfo.hasNextPage).toEqual(true);
+      expect(response.body.data.catsConnection.pageInfo.hasNextPage).toEqual(
+        true,
+      );
     });
 
     it('brings page info when there are no remaining pages correctly', async () => {
@@ -104,7 +108,9 @@ describe('getCatsByOwner root query', () => {
       `;
       const response = await graphqlQuery(app, query);
       expect(response.body.errors).not.toBeDefined();
-      expect(response.body.data.catsConnection.pageInfo.hasNextPage).toEqual(false);
+      expect(response.body.data.catsConnection.pageInfo.hasNextPage).toEqual(
+        false,
+      );
     });
   });
 
@@ -128,8 +134,9 @@ describe('getCatsByOwner root query', () => {
       const response = await graphqlQuery(app, query);
       expect(response.body.errors).not.toBeDefined();
       expect(response.body.data.catsConnection.edges).toHaveLength(2);
-      expect(response.body.data.catsConnection.edges.map(edge => edge.node.name))
-        .toEqual([cat3.name, cat4.name]);
+      expect(
+        response.body.data.catsConnection.edges.map((edge) => edge.node.name),
+      ).toEqual([cat3.name, cat4.name]);
       cursor = response.body.data.catsConnection.edges[1].cursor;
     });
 
@@ -150,8 +157,9 @@ describe('getCatsByOwner root query', () => {
       const response = await graphqlQuery(app, query);
       expect(response.body.errors).not.toBeDefined();
       expect(response.body.data.catsConnection.edges).toHaveLength(2);
-      expect(response.body.data.catsConnection.edges.map(edge => edge.node.name))
-        .toEqual([cat2.name, cat3.name]);
+      expect(
+        response.body.data.catsConnection.edges.map((edge) => edge.node.name),
+      ).toEqual([cat2.name, cat3.name]);
     });
 
     it('brings page info correctly', async () => {
@@ -166,7 +174,9 @@ describe('getCatsByOwner root query', () => {
       `;
       const response = await graphqlQuery(app, query);
       expect(response.body.errors).not.toBeDefined();
-      expect(response.body.data.catsConnection.pageInfo.hasPreviousPage).toEqual(true);
+      expect(
+        response.body.data.catsConnection.pageInfo.hasPreviousPage,
+      ).toEqual(true);
     });
 
     it('brings page info when there are no remaining pages correctly', async () => {
@@ -181,7 +191,9 @@ describe('getCatsByOwner root query', () => {
       `;
       const response = await graphqlQuery(app, query);
       expect(response.body.errors).not.toBeDefined();
-      expect(response.body.data.catsConnection.pageInfo.hasPreviousPage).toEqual(false);
+      expect(
+        response.body.data.catsConnection.pageInfo.hasPreviousPage,
+      ).toEqual(false);
     });
   });
 
@@ -233,8 +245,13 @@ describe('getCatsByOwner root query', () => {
       const response = await graphqlQuery(app, query);
 
       expect(response.body.errors).not.toBeDefined();
-      expect(response.body.data.catsConnection.edges.map(e => e.node.id)).toEqual(
-        [cat1, cat2, cat3].map(c => c.id).sort().map(id => id.toString()),
+      expect(
+        response.body.data.catsConnection.edges.map((e) => e.node.id),
+      ).toEqual(
+        [cat1, cat2, cat3]
+          .map((c) => c.id)
+          .sort()
+          .map((id) => id.toString()),
       );
 
       const query2 = `
@@ -252,8 +269,14 @@ describe('getCatsByOwner root query', () => {
       const response2 = await graphqlQuery(app, query2);
 
       expect(response2.body.errors).not.toBeDefined();
-      expect(response2.body.data.catsConnection.edges.map(e => e.node.id)).toEqual(
-        [cat2, cat3, cat4].map(c => c.id).sort().reverse().map(id => id.toString()),
+      expect(
+        response2.body.data.catsConnection.edges.map((e) => e.node.id),
+      ).toEqual(
+        [cat2, cat3, cat4]
+          .map((c) => c.id)
+          .sort()
+          .reverse()
+          .map((id) => id.toString()),
       );
     });
 
@@ -276,9 +299,9 @@ describe('getCatsByOwner root query', () => {
 
       expect(response.body.errors).not.toBeDefined();
       expect(response.body.data.catsConnection.totalCount).toEqual(4);
-      expect(response.body.data.catsConnection.edges.map(e => e.node.id)).toEqual(
-        [cat1, cat2].map(c => c.id).map(id => id.toString()),
-      );
+      expect(
+        response.body.data.catsConnection.edges.map((e) => e.node.id),
+      ).toEqual([cat1, cat2].map((c) => c.id).map((id) => id.toString()));
 
       cursor = response.body.data.catsConnection.edges[1].cursor;
 
@@ -299,9 +322,9 @@ describe('getCatsByOwner root query', () => {
 
       expect(response2.body.errors).not.toBeDefined();
       expect(response.body.data.catsConnection.totalCount).toEqual(4);
-      expect(response2.body.data.catsConnection.edges.map(e => e.node.id)).toEqual(
-        [cat3].map(c => c.id.toString()),
-      );
+      expect(
+        response2.body.data.catsConnection.edges.map((e) => e.node.id),
+      ).toEqual([cat3].map((c) => c.id.toString()));
     });
 
     it('sorts asc and desc correctly when result set is segmented', async () => {
@@ -321,9 +344,9 @@ describe('getCatsByOwner root query', () => {
       const response = await graphqlQuery(app, query);
 
       expect(response.body.errors).not.toBeDefined();
-      expect(response.body.data.catsConnection.edges.map(e => e.node.id)).toEqual(
-        [cat4, cat3].map(c => c.id).map(id => id.toString()),
-      );
+      expect(
+        response.body.data.catsConnection.edges.map((e) => e.node.id),
+      ).toEqual([cat4, cat3].map((c) => c.id).map((id) => id.toString()));
 
       cursor = response.body.data.catsConnection.edges[1].cursor;
 
@@ -342,9 +365,9 @@ describe('getCatsByOwner root query', () => {
       const response2 = await graphqlQuery(app, query2);
 
       expect(response2.body.errors).not.toBeDefined();
-      expect(response2.body.data.catsConnection.edges.map(e => e.node.id)).toEqual(
-        [cat2].map(c => c.id.toString()),
-      );
+      expect(
+        response2.body.data.catsConnection.edges.map((e) => e.node.id),
+      ).toEqual([cat2].map((c) => c.id.toString()));
     });
 
     it('sorts correctly when sorting by a non unique column and it gets segmentated', async () => {
@@ -379,9 +402,9 @@ describe('getCatsByOwner root query', () => {
 
       expect(response.body.errors).not.toBeDefined();
       expect(response.body.data.catsConnection.totalCount).toEqual(4);
-      expect(response.body.data.catsConnection.edges.map(e => e.node.id)).toEqual(
-        [cat4, cat1].map(c => c.id).map(id => id.toString()),
-      );
+      expect(
+        response.body.data.catsConnection.edges.map((e) => e.node.id),
+      ).toEqual([cat4, cat1].map((c) => c.id).map((id) => id.toString()));
 
       const cursor = response.body.data.catsConnection.edges[1].cursor;
 
@@ -400,33 +423,37 @@ describe('getCatsByOwner root query', () => {
       const response2 = await graphqlQuery(app, query2);
 
       expect(response2.body.errors).not.toBeDefined();
-      expect(response2.body.data.catsConnection.edges.map(e => e.node.id)).toEqual(
-        [cat3, cat2].map(c => c.id).map(id => id.toString()),
-      );
+      expect(
+        response2.body.data.catsConnection.edges.map((e) => e.node.id),
+      ).toEqual([cat3, cat2].map((c) => c.id).map((id) => id.toString()));
     });
 
     it('can sort by multiple columns', async () => {
       await catFactory.model.query().del();
-      cat1 = await catFactory.model
-        .query()
-        .insert({
-          ...catFactory.mockFn(), id: 1, name: 'Keyboard Cat 2', lastName: 'C',
-        });
-      cat2 = await catFactory.model
-        .query()
-        .insert({
-          ...catFactory.mockFn(), id: 2, name: 'Keyboard Cat 3', lastName: 'A',
-        });
-      cat3 = await catFactory.model
-        .query()
-        .insert({
-          ...catFactory.mockFn(), id: 3, name: 'Keyboard Cat 2', lastName: 'B',
-        });
-      const cat4 = await catFactory.model
-        .query()
-        .insert({
-          ...catFactory.mockFn(), id: 4, name: 'Keyboard Cat 1', lastName: 'A',
-        });
+      cat1 = await catFactory.model.query().insert({
+        ...catFactory.mockFn(),
+        id: 1,
+        name: 'Keyboard Cat 2',
+        lastName: 'C',
+      });
+      cat2 = await catFactory.model.query().insert({
+        ...catFactory.mockFn(),
+        id: 2,
+        name: 'Keyboard Cat 3',
+        lastName: 'A',
+      });
+      cat3 = await catFactory.model.query().insert({
+        ...catFactory.mockFn(),
+        id: 3,
+        name: 'Keyboard Cat 2',
+        lastName: 'B',
+      });
+      const cat4 = await catFactory.model.query().insert({
+        ...catFactory.mockFn(),
+        id: 4,
+        name: 'Keyboard Cat 1',
+        lastName: 'A',
+      });
 
       // Ordered result set by name:asc lastName:asc should be
       // 4A 3B 1C 2A
@@ -452,9 +479,9 @@ describe('getCatsByOwner root query', () => {
 
       expect(response.body.errors).not.toBeDefined();
       expect(response.body.data.catsConnection.totalCount).toEqual(4);
-      expect(response.body.data.catsConnection.edges.map(e => e.node.id)).toEqual(
-        [cat4, cat3].map(c => c.id).map(id => id.toString()),
-      );
+      expect(
+        response.body.data.catsConnection.edges.map((e) => e.node.id),
+      ).toEqual([cat4, cat3].map((c) => c.id).map((id) => id.toString()));
 
       const cursor = response.body.data.catsConnection.edges[1].cursor;
 
@@ -478,33 +505,37 @@ describe('getCatsByOwner root query', () => {
       const response2 = await graphqlQuery(app, query2);
 
       expect(response2.body.errors).not.toBeDefined();
-      expect(response2.body.data.catsConnection.edges.map(e => e.node.id)).toEqual(
-        [cat1, cat2].map(c => c.id).map(id => id.toString()),
-      );
+      expect(
+        response2.body.data.catsConnection.edges.map((e) => e.node.id),
+      ).toEqual([cat1, cat2].map((c) => c.id).map((id) => id.toString()));
     });
 
     it('can sort by multiple columns using reverse pagination', async () => {
       await catFactory.model.query().del();
-      cat1 = await catFactory.model
-        .query()
-        .insert({
-          ...catFactory.mockFn(), id: 1, name: 'Keyboard Cat 2', lastName: 'B',
-        });
-      cat2 = await catFactory.model
-        .query()
-        .insert({
-          ...catFactory.mockFn(), id: 2, name: 'Keyboard Cat 3', lastName: 'D',
-        });
-      cat3 = await catFactory.model
-        .query()
-        .insert({
-          ...catFactory.mockFn(), id: 3, name: 'Keyboard Cat 2', lastName: 'A',
-        });
-      const cat4 = await catFactory.model
-        .query()
-        .insert({
-          ...catFactory.mockFn(), id: 4, name: 'Keyboard Cat 1', lastName: 'C',
-        });
+      cat1 = await catFactory.model.query().insert({
+        ...catFactory.mockFn(),
+        id: 1,
+        name: 'Keyboard Cat 2',
+        lastName: 'B',
+      });
+      cat2 = await catFactory.model.query().insert({
+        ...catFactory.mockFn(),
+        id: 2,
+        name: 'Keyboard Cat 3',
+        lastName: 'D',
+      });
+      cat3 = await catFactory.model.query().insert({
+        ...catFactory.mockFn(),
+        id: 3,
+        name: 'Keyboard Cat 2',
+        lastName: 'A',
+      });
+      const cat4 = await catFactory.model.query().insert({
+        ...catFactory.mockFn(),
+        id: 4,
+        name: 'Keyboard Cat 1',
+        lastName: 'C',
+      });
 
       // Ordered result set by name:asc lastName:asc should be
       // 4 3 1 2
@@ -530,9 +561,9 @@ describe('getCatsByOwner root query', () => {
 
       expect(response.body.errors).not.toBeDefined();
       expect(response.body.data.catsConnection.totalCount).toEqual(4);
-      expect(response.body.data.catsConnection.edges.map(e => e.node.id)).toEqual(
-        [cat1, cat2].map(c => c.id).map(id => id.toString()),
-      );
+      expect(
+        response.body.data.catsConnection.edges.map((e) => e.node.id),
+      ).toEqual([cat1, cat2].map((c) => c.id).map((id) => id.toString()));
 
       // We get cat1's cursor
       const cursor = response.body.data.catsConnection.edges[0].cursor;
@@ -557,9 +588,9 @@ describe('getCatsByOwner root query', () => {
       const response2 = await graphqlQuery(app, query2);
 
       expect(response2.body.errors).not.toBeDefined();
-      expect(response2.body.data.catsConnection.edges.map(e => e.node.id)).toEqual(
-        [cat4, cat3].map(c => c.id).map(id => id.toString()),
-      );
+      expect(
+        response2.body.data.catsConnection.edges.map((e) => e.node.id),
+      ).toEqual([cat4, cat3].map((c) => c.id).map((id) => id.toString()));
     });
   });
 
@@ -587,7 +618,10 @@ describe('getCatsByOwner root query', () => {
 
     it('paginates segmentating by null values', async () => {
       const [unnamedCat] = await catFactory.model.query().limit(1);
-      await catFactory.model.query().where({ id: unnamedCat.id }).patch({ lastName: null });
+      await catFactory.model
+        .query()
+        .where({ id: unnamedCat.id })
+        .patch({ lastName: null });
       const query = `
         {
           catsConnection(first: 1, orderBy: "lastName", orderDirection: asc) {
@@ -606,7 +640,9 @@ describe('getCatsByOwner root query', () => {
 
       expect(response.body.errors).not.toBeDefined();
       // In SQLITE nulls come first.
-      expect(response.body.data.catsConnection.edges[0].node.lastName).toEqual(null);
+      expect(response.body.data.catsConnection.edges[0].node.lastName).toEqual(
+        null,
+      );
 
       const { cursor } = response.body.data.catsConnection.edges[0];
 
@@ -629,14 +665,26 @@ describe('getCatsByOwner root query', () => {
 
       expect(response2.body.errors).not.toBeDefined();
       expect(response2.body.data.catsConnection.edges).toHaveLength(2);
-      expect(response2.body.data.catsConnection.edges[0].node.lastName).not.toEqual(null);
-      expect(response2.body.data.catsConnection.edges[1].node.lastName).not.toEqual(null);
+      expect(
+        response2.body.data.catsConnection.edges[0].node.lastName,
+      ).not.toEqual(null);
+      expect(
+        response2.body.data.catsConnection.edges[1].node.lastName,
+      ).not.toEqual(null);
     });
 
     it('paginates segmentating in the middle of null values', async () => {
-      const [unnamedCat1, unnamedCat2] = await catFactory.model.query().limit(2);
-      await catFactory.model.query().where({ id: unnamedCat1.id }).patch({ lastName: null });
-      await catFactory.model.query().where({ id: unnamedCat2.id }).patch({ lastName: null });
+      const [unnamedCat1, unnamedCat2] = await catFactory.model
+        .query()
+        .limit(2);
+      await catFactory.model
+        .query()
+        .where({ id: unnamedCat1.id })
+        .patch({ lastName: null });
+      await catFactory.model
+        .query()
+        .where({ id: unnamedCat2.id })
+        .patch({ lastName: null });
       const query = `
         {
           catsConnection(first: 1, orderBy: "lastName", orderDirection: asc) {
@@ -655,7 +703,9 @@ describe('getCatsByOwner root query', () => {
 
       expect(response.body.errors).not.toEqual(null);
       // In SQLITE nulls come first.
-      expect(response.body.data.catsConnection.edges[0].node.lastName).toEqual(null);
+      expect(response.body.data.catsConnection.edges[0].node.lastName).toEqual(
+        null,
+      );
 
       const { cursor } = response.body.data.catsConnection.edges[0];
 
@@ -678,8 +728,12 @@ describe('getCatsByOwner root query', () => {
 
       expect(response2.body.errors).not.toEqual(null);
       expect(response2.body.data.catsConnection.edges).toHaveLength(2);
-      expect(response2.body.data.catsConnection.edges[0].node.lastName).toEqual(null);
-      expect(response2.body.data.catsConnection.edges[1].node.lastName).not.toEqual(null);
+      expect(response2.body.data.catsConnection.edges[0].node.lastName).toEqual(
+        null,
+      );
+      expect(
+        response2.body.data.catsConnection.edges[1].node.lastName,
+      ).not.toEqual(null);
     });
   });
 
@@ -702,10 +756,12 @@ describe('getCatsByOwner root query', () => {
       const response = await graphqlQuery(app, query);
       expect(response.body.errors).not.toBeDefined();
       expect(response.body.data.catsConnection.edges).toHaveLength(2);
-      expect(response.body.data.catsConnection.edges.map(edge => edge.node.name))
-        .toEqual([cat1.name, cat2.name]);
-      expect(response.body.data.catsConnection.edges.map(edge => edge.custom))
-        .toEqual(['foo', 'foo']);
+      expect(
+        response.body.data.catsConnection.edges.map((edge) => edge.node.name),
+      ).toEqual([cat1.name, cat2.name]);
+      expect(
+        response.body.data.catsConnection.edges.map((edge) => edge.custom),
+      ).toEqual(['foo', 'foo']);
     });
   });
 });
