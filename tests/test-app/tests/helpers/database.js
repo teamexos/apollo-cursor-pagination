@@ -6,7 +6,7 @@ const knex = require('../../src/models/db');
 
 beforeAll(async () => {
   if (process.env.NODE_ENV !== 'test') {
-    throw 'Tests can only run in test environment';
+    throw Error('Tests can only run in test environment');
   }
   try {
     await knex.migrate.latest();
@@ -21,7 +21,7 @@ afterAll(() => knex.destroy());
 
 beforeEach(async () => {
   if (process.env.NODE_ENV !== 'test') {
-    throw 'Tests can only run in test environment';
+    throw Error('Tests can only run in test environment');
   }
   await knexCleaner.clean(knex);
 });

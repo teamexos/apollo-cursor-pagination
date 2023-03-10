@@ -232,7 +232,7 @@ const removeNodesFromBeginning = (
   const subquery = orderNodesBy(nodesAccessor.clone().clearOrder(), {
     orderColumn,
     ascOrDesc: order,
-    primaryKey: primaryKey,
+    primaryKey,
   }).limit(last);
   const result = nodesAccessor
     .clone()
