@@ -14,7 +14,8 @@
     "build": "babel src --out-dir dist",
     "release": "npm run build && npm publish && git push origin head --tags",
     "lint": "eslint . --ext .js",
-    "format": "prettier --write \"**/*.+(js|json|ts|vue|graphql|html|md)\""
+    "format": "prettier --write \"**/*.+(js|json|ts|vue|graphql|html|md)\"",
+    "test": "npm run test --prefix tests/test-app"
   },
   "devDependencies": {
     "@babel/cli": "^7.1.2",
