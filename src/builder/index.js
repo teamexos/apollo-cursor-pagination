@@ -10,22 +10,27 @@
  */
 const applyCursorsToNodes = (
   allNodesAccessor,
-  { before, after }, {
-    removeNodesBeforeAndIncluding,
-    removeNodesAfterAndIncluding,
-  }, {
-    orderColumn, ascOrDesc, isAggregateFn, formatColumnFn, primaryKey
-  },
+  { before, after },
+  { removeNodesBeforeAndIncluding, removeNodesAfterAndIncluding },
+  { orderColumn, ascOrDesc, isAggregateFn, formatColumnFn, primaryKey },
 ) => {
   let nodesAccessor = allNodesAccessor;
   if (after) {
     nodesAccessor = removeNodesBeforeAndIncluding(nodesAccessor, after, {
-      orderColumn, ascOrDesc, isAggregateFn, formatColumnFn, primaryKey
+      orderColumn,
+      ascOrDesc,
+      isAggregateFn,
+      formatColumnFn,
+      primaryKey,
     });
   }
   if (before) {
     nodesAccessor = removeNodesAfterAndIncluding(nodesAccessor, before, {
-      orderColumn, ascOrDesc, isAggregateFn, formatColumnFn, primaryKey
+      orderColumn,
+      ascOrDesc,
+      isAggregateFn,
+      formatColumnFn,
+      primaryKey,
     });
   }
   return nodesAccessor;
@@ -48,14 +53,15 @@ const nodesToReturn = async (
     removeNodesFromBeginning,
     orderNodesBy,
   },
-  {
-    before, after, first, last,
-  }, {
-    orderColumn, ascOrDesc, isAggregateFn, formatColumnFn, primaryKey
-  },
+  { before, after, first, last },
+  { orderColumn, ascOrDesc, isAggregateFn, formatColumnFn, primaryKey },
 ) => {
   const orderedNodesAccessor = orderNodesBy(allNodesAccessor, {
-    orderColumn, ascOrDesc, isAggregateFn, formatColumnFn, primaryKey
+    orderColumn,
+    ascOrDesc,
+    isAggregateFn,
+    formatColumnFn,
+    primaryKey,
   });
   const nodesAccessor = applyCursorsToNodes(
     orderedNodesAccessor,
@@ -63,8 +69,13 @@ const nodesToReturn = async (
     {
       removeNodesBeforeAndIncluding,
       removeNodesAfterAndIncluding,
-    }, {
-      orderColumn, ascOrDesc, isAggregateFn, formatColumnFn, primaryKey
+    },
+    {
+      orderColumn,
+      ascOrDesc,
+      isAggregateFn,
+      formatColumnFn,
+      primaryKey,
     },
   );
   let hasNextPage = !!before;
@@ -72,7 +83,10 @@ const nodesToReturn = async (
   let nodes = [];
   if (first) {
     if (first < 0) throw new Error('`first` argument must not be less than 0');
-    nodes = await removeNodesFromEnd(nodesAccessor, first + 1, { orderColumn, ascOrDesc });
+    nodes = await removeNodesFromEnd(nodesAccessor, first + 1, {
+      orderColumn,
+      ascOrDesc,
+    });
     if (nodes.length > first) {
       hasNextPage = true;
       nodes = nodes.slice(0, first);
@@ -80,7 +94,11 @@ const nodesToReturn = async (
   }
   if (last) {
     if (last < 0) throw new Error('`last` argument must not be less than 0');
-    nodes = await removeNodesFromBeginning(nodesAccessor, last + 1, { orderColumn, ascOrDesc, primaryKey });
+    nodes = await removeNodesFromBeginning(nodesAccessor, last + 1, {
+      orderColumn,
+      ascOrDesc,
+      primaryKey,
+    });
     if (nodes.length > last) {
       hasPreviousPage = true;
       nodes = nodes.slice(1);
@@ -93,80 +111,109 @@ const nodesToReturn = async (
  * Returns a function that must be called to generate a Relay's Connection based page.
  * @param {Object} operatorFunctions must contain `getNodesLength`, `removeNodesFromEnd`, `removeNodesFromBeginning`,`removeNodesBeforeAndIncluding` and `removeNodesAfterAndIncluding` functions.
  */
-const apolloCursorPaginationBuilder = ({
-  removeNodesBeforeAndIncluding,
-  removeNodesAfterAndIncluding,
-  getNodesLength,
-  hasLengthGreaterThan,
-  removeNodesFromEnd,
-  removeNodesFromBeginning,
-  convertNodesToEdges,
-  orderNodesBy,
-}) => async (
-  allNodesAccessor,
-  args = {},
-  opts = {},
-) => {
-  const {
-    isAggregateFn, formatColumnFn, skipTotalCount = false, modifyEdgeFn, primaryKey = 'id',
-  } = opts;
-  let {
-    orderColumn, ascOrDesc,
-  } = opts;
-  const {
-    before, after, first, last, orderDirection = 'asc', orderBy = primaryKey,
-  } = args;
-
-  if (orderColumn) {
-    console.warn('"orderColumn" and "ascOrDesc" are being deprecated in favor of "orderBy" and "orderDirection" respectively');
-  } else {
-    orderColumn = orderBy;
-    ascOrDesc = orderDirection;
-  }
-
-  const { nodes, hasPreviousPage, hasNextPage } = await nodesToReturn(
-    allNodesAccessor,
-    {
-      removeNodesBeforeAndIncluding,
-      removeNodesAfterAndIncluding,
-      getNodesLength,
-      hasLengthGreaterThan,
-      removeNodesFromEnd,
-      removeNodesFromBeginning,
-      orderNodesBy,
-    }, {
-      before, after, first, last,
-    }, {
-      orderColumn, ascOrDesc, isAggregateFn, formatColumnFn, primaryKey
-    },
-  );
-
-  const totalCount = !skipTotalCount && await getNodesLength(allNodesAccessor, {
+const apolloCursorPaginationBuilder =
+  ({
+    removeNodesBeforeAndIncluding,
+    removeNodesAfterAndIncluding,
     getNodesLength,
-  });
+    hasLengthGreaterThan,
+    removeNodesFromEnd,
+    removeNodesFromBeginning,
+    convertNodesToEdges,
+    orderNodesBy,
+  }) =>
+  async (allNodesAccessor, args = {}, opts = {}) => {
+    const {
+      isAggregateFn,
+      formatColumnFn,
+      skipTotalCount = false,
+      modifyEdgeFn,
+      primaryKey = 'id',
+    } = opts;
+    let { orderColumn, ascOrDesc } = opts;
+    const {
+      before,
+      after,
+      first,
+      last,
+      orderDirection = 'asc',
+      orderBy = primaryKey,
+    } = args;
 
-  let edges = convertNodesToEdges(nodes, {
-    before, after, first, last,
-  }, {
-    orderColumn, ascOrDesc, isAggregateFn, formatColumnFn, primaryKey
-  });
-  if (modifyEdgeFn) {
-    edges = edges.map(edge => modifyEdgeFn(edge));
-  }
+    if (orderColumn) {
+      console.warn(
+        '"orderColumn" and "ascOrDesc" are being deprecated in favor of "orderBy" and "orderDirection" respectively',
+      );
+    } else {
+      orderColumn = orderBy;
+      ascOrDesc = orderDirection;
+    }
 
-  const startCursor = edges[0] && edges[0].cursor;
-  const endCursor = edges[edges.length - 1] && edges[edges.length - 1].cursor;
+    const { nodes, hasPreviousPage, hasNextPage } = await nodesToReturn(
+      allNodesAccessor,
+      {
+        removeNodesBeforeAndIncluding,
+        removeNodesAfterAndIncluding,
+        getNodesLength,
+        hasLengthGreaterThan,
+        removeNodesFromEnd,
+        removeNodesFromBeginning,
+        orderNodesBy,
+      },
+      {
+        before,
+        after,
+        first,
+        last,
+      },
+      {
+        orderColumn,
+        ascOrDesc,
+        isAggregateFn,
+        formatColumnFn,
+        primaryKey,
+      },
+    );
 
-  return {
-    pageInfo: {
-      hasPreviousPage,
-      hasNextPage,
-      startCursor,
-      endCursor,
-    },
-    totalCount,
-    edges,
+    const totalCount =
+      !skipTotalCount &&
+      (await getNodesLength(allNodesAccessor, {
+        getNodesLength,
+      }));
+
+    let edges = convertNodesToEdges(
+      nodes,
+      {
+        before,
+        after,
+        first,
+        last,
+      },
+      {
+        orderColumn,
+        ascOrDesc,
+        isAggregateFn,
+        formatColumnFn,
+        primaryKey,
+      },
+    );
+    if (modifyEdgeFn) {
+      edges = edges.map((edge) => modifyEdgeFn(edge));
+    }
+
+    const startCursor = edges[0] && edges[0].cursor;
+    const endCursor = edges[edges.length - 1] && edges[edges.length - 1].cursor;
+
+    return {
+      pageInfo: {
+        hasPreviousPage,
+        hasNextPage,
+        startCursor,
+        endCursor,
+      },
+      totalCount,
+      edges,
+    };
   };
-};
 
 module.exports = apolloCursorPaginationBuilder;

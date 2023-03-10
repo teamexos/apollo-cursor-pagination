@@ -33,18 +33,23 @@ import knex from '../../../db'; // Or instantiate a connection here
 export default async (_, args) => {
   // orderBy must be the column to sort with or an array of columns for ordering by multiple fields
   // orderDirection must be 'asc' or 'desc', or an array of those values if ordering by multiples
-  const {
-    first, last, before, after, orderBy, orderDirection,
-  } = args;
+  const { first, last, before, after, orderBy, orderDirection } = args;
 
   const baseQuery = knex('cats');
 
-  const result = await paginate(baseQuery, {first, last, before, after, orderBy, orderDirection});
+  const result = await paginate(baseQuery, {
+    first,
+    last,
+    before,
+    after,
+    orderBy,
+    orderDirection,
+  });
   /* result will contain:
-  * edges
-  * totalCount
-  * pageInfo { hasPreviousPage, hasNextPage, }
-  */
+   * edges
+   * totalCount
+   * pageInfo { hasPreviousPage, hasNextPage, }
+   */
   return result;
 };
 ```
@@ -63,9 +68,9 @@ const result = await paginate(
   {
     formatColumnFn: (column) => {
       // Logic to transform your column name goes here...
-      return column
-    }
-  }
+      return column;
+    },
+  },
 );
 ```
 
@@ -77,22 +82,23 @@ database column name is "created_at" and the column name on the model is "create
 <details>
   <summary>An example with Objection columnNameMappers</summary>
 
-  ```javascript
-  const result = await paginate(
-    baseQuery,
-    { first, last, before, after, orderBy, orderDirection },
-    {
-      formatColumnFn: (column) => {
-        if (Model.columnNameMappers && Model.columnNameMappers.format) {
-          const result = Model.columnNameMappers.format({ [column]: true })
-          return Object.keys(result)[0]
-        } else {
-          return column
-        }
+```javascript
+const result = await paginate(
+  baseQuery,
+  { first, last, before, after, orderBy, orderDirection },
+  {
+    formatColumnFn: (column) => {
+      if (Model.columnNameMappers && Model.columnNameMappers.format) {
+        const result = Model.columnNameMappers.format({ [column]: true });
+        return Object.keys(result)[0];
+      } else {
+        return column;
       }
-    }
-  );
-  ```
+    },
+  },
+);
+```
+
 </details>
 
 #### Customizing Edges
@@ -108,8 +114,8 @@ const result = await paginate(
     modifyEdgeFn: (edge) => ({
       ...edge,
       custom: 'foo',
-    })
-  }
+    }),
+  },
 );
 ```
 

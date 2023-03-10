@@ -20,15 +20,16 @@ const stop = async (app, done) => {
   done();
 };
 
-const graphqlQuery = (app, query) => request({
-  baseUrl: `http://localhost:${app.address().port}`,
-  uri: '/graphql',
-  qs: {
-    query,
-  },
-  resolveWithFullResponse: true,
-  json: true,
-});
+const graphqlQuery = (app, query) =>
+  request({
+    baseUrl: `http://localhost:${app.address().port}`,
+    uri: '/graphql',
+    qs: {
+      query,
+    },
+    resolveWithFullResponse: true,
+    json: true,
+  });
 
 module.exports = {
   start,
