@@ -178,7 +178,7 @@ const orderNodesBy = (
       }
       return prev.orderBy(
         formatColumnIfAvailable(orderBy, formatColumnFn, false),
-        ascOrDesc || null,
+        ascOrDesc,
         orderNulls || null,
       );
     },
