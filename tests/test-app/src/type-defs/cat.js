@@ -22,6 +22,11 @@ const Cat = `
     desc
   }
 
+  enum OrderNulls {
+    first
+    last
+  }
+
   extend type Query {
     catsConnection(
       first: Int
@@ -30,8 +35,10 @@ const Cat = `
       before: String
       orderBy: String
       orderDirection: OrderDirection
+      orderNulls: OrderNulls
       orderDirectionMultiple: [OrderDirection]
       orderByMultiple: [String!]
+      orderNullsMultiple: [OrderNulls]
       useOffsetPagination: Boolean
     ): CatsConnection!
   }

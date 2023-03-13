@@ -54,11 +54,19 @@ const nodesToReturn = async (
     orderNodesBy,
   },
   { before, after, first, last },
-  { orderColumn, ascOrDesc, isAggregateFn, formatColumnFn, primaryKey },
+  {
+    orderColumn,
+    ascOrDesc,
+    orderNulls,
+    isAggregateFn,
+    formatColumnFn,
+    primaryKey,
+  },
 ) => {
   const orderedNodesAccessor = orderNodesBy(allNodesAccessor, {
     orderColumn,
     ascOrDesc,
+    orderNulls,
     isAggregateFn,
     formatColumnFn,
     primaryKey,
@@ -138,6 +146,7 @@ const apolloCursorPaginationBuilder =
       last,
       orderDirection = 'asc',
       orderBy = primaryKey,
+      orderNulls,
     } = args;
 
     if (orderColumn) {
@@ -169,6 +178,7 @@ const apolloCursorPaginationBuilder =
       {
         orderColumn,
         ascOrDesc,
+        orderNulls,
         isAggregateFn,
         formatColumnFn,
         primaryKey,

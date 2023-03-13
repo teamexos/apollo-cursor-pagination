@@ -156,7 +156,13 @@ const buildRemoveNodesFromBeforeOrAfter = (beforeOrAfter) => {
 
 const orderNodesBy = (
   nodesAccessor,
-  { orderColumn = 'id', ascOrDesc = 'asc', formatColumnFn, primaryKey = 'id' },
+  {
+    orderColumn = 'id',
+    ascOrDesc = 'asc',
+    orderNulls,
+    formatColumnFn,
+    primaryKey = 'id',
+  },
 ) => {
   const initialValue = nodesAccessor.clone();
   const result = operateOverScalarOrArray(
@@ -171,7 +177,8 @@ const orderNodesBy = (
       }
       return prev.orderBy(
         formatColumnIfAvailable(orderBy, formatColumnFn, false),
-        ascOrDesc,
+        ascOrDesc || null,
+        orderNulls || null,
       );
     },
     (prev, isArray) =>

@@ -280,6 +280,72 @@ describe('getCatsByOwner root query', () => {
       );
     });
 
+    /**
+     * the "desc" tests may look backwards, but that is due to knex's
+     * implementation of nulls last/first where `desc` flips the behaviour of `nulls first/last`
+     *
+     * See:
+     *
+     * ('foo', 'desc', 'first')
+     *
+     * results in:
+     *
+     * select * from cats order by (last_name is not null) desc, last_name desc;
+     *
+     * which gives us:
+     *
+     * c, b, a, null
+     *
+     * https://github.com/knex/knex/pull/4720/files#diff-9a54bb8c91fbb672179c076a18af9db40b73bc5c4a3e3ea7cc89c48ea8ebeadfR5637
+     *
+     * ** Note that this won't be an issue when using postgres as it was updated to
+     * support nulls first/last queries
+     *
+     * https://github.com/knex/knex/pull/4989/files#diff-c7f7c2ac0fa977abfc798d590b71de4daf0426767ff76e312b3ad39baf9b2585R619
+     */
+    it.each([
+      ['asc', 'last', ['a', 'b', 'c', null]],
+      ['desc', 'last', [null, 'c', 'b', 'a']],
+      ['asc', 'first', [null, 'a', 'b', 'c']],
+      ['desc', 'first', ['c', 'b', 'a', null]],
+    ])(
+      'sorts %s correctly by lastName with nulls %s',
+      async (ascOrDesc, firstOrLast, expected) => {
+        await catFactory.model.query().del();
+        cat1 = await catFactory.model
+          .query()
+          .insert({ ...catFactory.mockFn(), id: 1, lastName: 'a' });
+        cat2 = await catFactory.model
+          .query()
+          .insert({ ...catFactory.mockFn(), id: 2, lastName: 'b' });
+        cat3 = await catFactory.model
+          .query()
+          .insert({ ...catFactory.mockFn(), id: 3, lastName: 'c' });
+        cat4 = await catFactory.model
+          .query()
+          .insert({ ...catFactory.mockFn(), id: 4, lastName: null });
+
+        const query = `
+        {
+          catsConnection(first: 4, orderBy: "lastName", orderDirection: ${ascOrDesc}, orderNulls: ${firstOrLast}) {
+            edges {
+              cursor
+              node {
+                lastName
+              }
+            }
+          }
+        }
+      `;
+        const response = await graphqlQuery(app, query);
+
+        expect(response.body.errors).not.toBeDefined();
+        expect(
+          response.body.data.catsConnection.edges.map((e) => e.node.lastName),
+        ).toEqual(expected);
+      },
+    );
+
     it('can sort by aggregate value', async () => {
       let cursor;
       const query = `
