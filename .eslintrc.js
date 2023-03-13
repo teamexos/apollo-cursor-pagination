@@ -1,4 +1,7 @@
 module.exports = {
+  parserOptions: {
+    ecmaVersion: 2020,
+  },
   plugins: ['jest'],
   extends: ['airbnb-base', 'plugin:jest/recommended', 'prettier'],
   rules: {
