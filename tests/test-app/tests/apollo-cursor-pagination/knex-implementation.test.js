@@ -722,6 +722,104 @@ describe('getCatsByOwner root query', () => {
           ).toEqual(expected);
         },
       );
+
+      it.each([
+        // ['asc', 'last', ['a', 'b'], ['c', null]],
+        ['desc', 'last', [null, 'c'], ['b', 'a']],
+        ['asc', 'first', [null, 'a'], ['b', 'c']],
+        // ['desc', 'first', ['c', 'b'], ['a', null]],
+      ])(
+        'can sort and paginate by multiple columns %s with nulls %s',
+        async (
+          ascOrDesc,
+          firstOrLast,
+          expectedFirstPage,
+          expectedSecondPage,
+        ) => {
+          await catFactory.model.query().del();
+          cat1 = await catFactory.model.query().insert({
+            ...catFactory.mockFn(),
+            id: 1,
+            name: 'Keyboard Cat 1',
+            lastName: 'a',
+          });
+          cat2 = await catFactory.model.query().insert({
+            ...catFactory.mockFn(),
+            id: 2,
+            name: 'Keyboard Cat 2',
+            lastName: 'b',
+          });
+          cat3 = await catFactory.model.query().insert({
+            ...catFactory.mockFn(),
+            id: 3,
+            name: 'Keyboard Cat 3',
+            lastName: 'c',
+          });
+          cat4 = await catFactory.model.query().insert({
+            ...catFactory.mockFn(),
+            id: 4,
+            name: 'Keyboard Cat 4',
+            lastName: null,
+          });
+
+          const query = `
+            {
+              catsConnection(
+                first: 2
+                orderByMultiple: ["lastName", "name"]
+                orderDirectionMultiple: [${ascOrDesc}, asc]
+                orderNullsMultiple: [${firstOrLast}, last]
+              ) {
+                totalCount
+                edges {
+                  cursor
+                  node {
+                    id
+                    lastName
+                  }
+                }
+              }
+            }
+          `;
+          const response = await graphqlQuery(app, query);
+
+          expect(response.body.errors).not.toBeDefined();
+          expect(response.body.data.catsConnection.totalCount).toEqual(4);
+          expect(
+            response.body.data.catsConnection.edges.map((e) => e.node.lastName),
+          ).toEqual(expectedFirstPage);
+
+          const cursor = response.body.data.catsConnection.edges[1].cursor;
+
+          const query2 = `
+            {
+              catsConnection(
+                first: 2
+                after: "${cursor}"
+                orderByMultiple: ["lastName", "name"]
+                orderDirectionMultiple: [${ascOrDesc}, asc]
+                orderNullsMultiple: [${firstOrLast}, last]
+              ) {
+                edges {
+                  cursor
+                  node {
+                    id
+                    lastName
+                  }
+                }
+              }
+            }
+          `;
+          const response2 = await graphqlQuery(app, query2);
+
+          expect(response2.body.errors).not.toBeDefined();
+          expect(
+            response2.body.data.catsConnection.edges.map(
+              (e) => e.node.lastName,
+            ),
+          ).toEqual(expectedSecondPage);
+        },
+      );
     });
   });
 
