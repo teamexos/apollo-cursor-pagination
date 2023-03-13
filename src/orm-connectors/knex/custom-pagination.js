@@ -173,6 +173,7 @@ const orderNodesBy = (
         return prev.orderBy(
           formatColumnIfAvailable(orderBy, formatColumnFn, false),
           ascOrDesc[index],
+          orderNulls?.[index] || null,
         );
       }
       return prev.orderBy(

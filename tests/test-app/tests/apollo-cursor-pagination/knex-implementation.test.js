@@ -659,6 +659,69 @@ describe('getCatsByOwner root query', () => {
           response2.body.data.catsConnection.edges.map((e) => e.node.id),
         ).toEqual([cat4, cat3].map((c) => c.id).map((id) => id.toString()));
       });
+
+      it.each([
+        ['asc', 'last', ['a', 'b', 'c', null]],
+        ['desc', 'last', [null, 'c', 'b', 'a']],
+        ['asc', 'first', [null, 'a', 'b', 'c']],
+        ['desc', 'first', ['c', 'b', 'a', null]],
+      ])(
+        'can sort by multiple columns %s with nulls %s',
+        async (ascOrDesc, firstOrLast, expected) => {
+          await catFactory.model.query().del();
+          cat1 = await catFactory.model.query().insert({
+            ...catFactory.mockFn(),
+            id: 1,
+            name: 'Keyboard Cat',
+            lastName: 'a',
+          });
+          cat2 = await catFactory.model.query().insert({
+            ...catFactory.mockFn(),
+            id: 2,
+            name: 'Keyboard Cat',
+            lastName: 'b',
+          });
+          cat3 = await catFactory.model.query().insert({
+            ...catFactory.mockFn(),
+            id: 3,
+            name: 'Keyboard Cat',
+            lastName: 'c',
+          });
+          cat4 = await catFactory.model.query().insert({
+            ...catFactory.mockFn(),
+            id: 4,
+            name: 'Keyboard Cat',
+            lastName: null,
+          });
+
+          const query = `
+            {
+              catsConnection(
+                first: 4
+                orderByMultiple: ["lastName", "name"]
+                orderDirectionMultiple: [${ascOrDesc}, asc]
+                orderNullsMultiple: [${firstOrLast}, last]
+              ) {
+                totalCount
+                edges {
+                  cursor
+                  node {
+                    id
+                    lastName
+                  }
+                }
+              }
+            }
+          `;
+          const response = await graphqlQuery(app, query);
+
+          expect(response.body.errors).not.toBeDefined();
+          expect(response.body.data.catsConnection.totalCount).toEqual(4);
+          expect(
+            response.body.data.catsConnection.edges.map((e) => e.node.lastName),
+          ).toEqual(expected);
+        },
+      );
     });
   });
 

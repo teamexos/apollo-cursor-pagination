@@ -9,6 +9,7 @@ export default async (_, args) => {
 
   const orderBy = args.orderBy || args.orderByMultiple;
   const orderDirection = args.orderDirection || args.orderDirectionMultiple;
+  const orderNulls = args.orderNulls || args.orderNullsMultiple;
 
   const baseQuery = Cat.query()
     .sum('id as idsum')
@@ -21,6 +22,7 @@ export default async (_, args) => {
       ...args,
       orderBy,
       orderDirection,
+      orderNulls,
     },
     {
       isAggregateFn: (column) => column === 'idsum',
