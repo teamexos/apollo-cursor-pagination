@@ -494,37 +494,38 @@ describe('getCatsByOwner root query', () => {
       ).toEqual([cat3, cat2].map((c) => c.id).map((id) => id.toString()));
     });
 
-    it('can sort by multiple columns', async () => {
-      await catFactory.model.query().del();
-      cat1 = await catFactory.model.query().insert({
-        ...catFactory.mockFn(),
-        id: 1,
-        name: 'Keyboard Cat 2',
-        lastName: 'C',
-      });
-      cat2 = await catFactory.model.query().insert({
-        ...catFactory.mockFn(),
-        id: 2,
-        name: 'Keyboard Cat 3',
-        lastName: 'A',
-      });
-      cat3 = await catFactory.model.query().insert({
-        ...catFactory.mockFn(),
-        id: 3,
-        name: 'Keyboard Cat 2',
-        lastName: 'B',
-      });
-      const cat4 = await catFactory.model.query().insert({
-        ...catFactory.mockFn(),
-        id: 4,
-        name: 'Keyboard Cat 1',
-        lastName: 'A',
-      });
+    describe('multi-column sort', () => {
+      it('can sort by multiple columns', async () => {
+        await catFactory.model.query().del();
+        cat1 = await catFactory.model.query().insert({
+          ...catFactory.mockFn(),
+          id: 1,
+          name: 'Keyboard Cat 2',
+          lastName: 'C',
+        });
+        cat2 = await catFactory.model.query().insert({
+          ...catFactory.mockFn(),
+          id: 2,
+          name: 'Keyboard Cat 3',
+          lastName: 'A',
+        });
+        cat3 = await catFactory.model.query().insert({
+          ...catFactory.mockFn(),
+          id: 3,
+          name: 'Keyboard Cat 2',
+          lastName: 'B',
+        });
+        const cat4 = await catFactory.model.query().insert({
+          ...catFactory.mockFn(),
+          id: 4,
+          name: 'Keyboard Cat 1',
+          lastName: 'A',
+        });
 
-      // Ordered result set by name:asc lastName:asc should be
-      // 4A 3B 1C 2A
+        // Ordered result set by name:asc lastName:asc should be
+        // 4A 3B 1C 2A
 
-      const query = `
+        const query = `
         {
           catsConnection(
             first: 2
@@ -541,17 +542,17 @@ describe('getCatsByOwner root query', () => {
           }
         }
       `;
-      const response = await graphqlQuery(app, query);
+        const response = await graphqlQuery(app, query);
 
-      expect(response.body.errors).not.toBeDefined();
-      expect(response.body.data.catsConnection.totalCount).toEqual(4);
-      expect(
-        response.body.data.catsConnection.edges.map((e) => e.node.id),
-      ).toEqual([cat4, cat3].map((c) => c.id).map((id) => id.toString()));
+        expect(response.body.errors).not.toBeDefined();
+        expect(response.body.data.catsConnection.totalCount).toEqual(4);
+        expect(
+          response.body.data.catsConnection.edges.map((e) => e.node.id),
+        ).toEqual([cat4, cat3].map((c) => c.id).map((id) => id.toString()));
 
-      const cursor = response.body.data.catsConnection.edges[1].cursor;
+        const cursor = response.body.data.catsConnection.edges[1].cursor;
 
-      const query2 = `
+        const query2 = `
         {
           catsConnection(
             first: 2
@@ -568,45 +569,45 @@ describe('getCatsByOwner root query', () => {
           }
         }
       `;
-      const response2 = await graphqlQuery(app, query2);
+        const response2 = await graphqlQuery(app, query2);
 
-      expect(response2.body.errors).not.toBeDefined();
-      expect(
-        response2.body.data.catsConnection.edges.map((e) => e.node.id),
-      ).toEqual([cat1, cat2].map((c) => c.id).map((id) => id.toString()));
-    });
-
-    it('can sort by multiple columns using reverse pagination', async () => {
-      await catFactory.model.query().del();
-      cat1 = await catFactory.model.query().insert({
-        ...catFactory.mockFn(),
-        id: 1,
-        name: 'Keyboard Cat 2',
-        lastName: 'B',
-      });
-      cat2 = await catFactory.model.query().insert({
-        ...catFactory.mockFn(),
-        id: 2,
-        name: 'Keyboard Cat 3',
-        lastName: 'D',
-      });
-      cat3 = await catFactory.model.query().insert({
-        ...catFactory.mockFn(),
-        id: 3,
-        name: 'Keyboard Cat 2',
-        lastName: 'A',
-      });
-      const cat4 = await catFactory.model.query().insert({
-        ...catFactory.mockFn(),
-        id: 4,
-        name: 'Keyboard Cat 1',
-        lastName: 'C',
+        expect(response2.body.errors).not.toBeDefined();
+        expect(
+          response2.body.data.catsConnection.edges.map((e) => e.node.id),
+        ).toEqual([cat1, cat2].map((c) => c.id).map((id) => id.toString()));
       });
 
-      // Ordered result set by name:asc lastName:asc should be
-      // 4 3 1 2
+      it('can sort by multiple columns using reverse pagination', async () => {
+        await catFactory.model.query().del();
+        cat1 = await catFactory.model.query().insert({
+          ...catFactory.mockFn(),
+          id: 1,
+          name: 'Keyboard Cat 2',
+          lastName: 'B',
+        });
+        cat2 = await catFactory.model.query().insert({
+          ...catFactory.mockFn(),
+          id: 2,
+          name: 'Keyboard Cat 3',
+          lastName: 'D',
+        });
+        cat3 = await catFactory.model.query().insert({
+          ...catFactory.mockFn(),
+          id: 3,
+          name: 'Keyboard Cat 2',
+          lastName: 'A',
+        });
+        const cat4 = await catFactory.model.query().insert({
+          ...catFactory.mockFn(),
+          id: 4,
+          name: 'Keyboard Cat 1',
+          lastName: 'C',
+        });
 
-      const query = `
+        // Ordered result set by name:asc lastName:asc should be
+        // 4 3 1 2
+
+        const query = `
         {
           catsConnection(
             last: 2
@@ -623,18 +624,18 @@ describe('getCatsByOwner root query', () => {
           }
         }
       `;
-      const response = await graphqlQuery(app, query);
+        const response = await graphqlQuery(app, query);
 
-      expect(response.body.errors).not.toBeDefined();
-      expect(response.body.data.catsConnection.totalCount).toEqual(4);
-      expect(
-        response.body.data.catsConnection.edges.map((e) => e.node.id),
-      ).toEqual([cat1, cat2].map((c) => c.id).map((id) => id.toString()));
+        expect(response.body.errors).not.toBeDefined();
+        expect(response.body.data.catsConnection.totalCount).toEqual(4);
+        expect(
+          response.body.data.catsConnection.edges.map((e) => e.node.id),
+        ).toEqual([cat1, cat2].map((c) => c.id).map((id) => id.toString()));
 
-      // We get cat1's cursor
-      const cursor = response.body.data.catsConnection.edges[0].cursor;
+        // We get cat1's cursor
+        const cursor = response.body.data.catsConnection.edges[0].cursor;
 
-      const query2 = `
+        const query2 = `
         {
           catsConnection(
             last: 2
@@ -651,12 +652,13 @@ describe('getCatsByOwner root query', () => {
           }
         }
       `;
-      const response2 = await graphqlQuery(app, query2);
+        const response2 = await graphqlQuery(app, query2);
 
-      expect(response2.body.errors).not.toBeDefined();
-      expect(
-        response2.body.data.catsConnection.edges.map((e) => e.node.id),
-      ).toEqual([cat4, cat3].map((c) => c.id).map((id) => id.toString()));
+        expect(response2.body.errors).not.toBeDefined();
+        expect(
+          response2.body.data.catsConnection.edges.map((e) => e.node.id),
+        ).toEqual([cat4, cat3].map((c) => c.id).map((id) => id.toString()));
+      });
     });
   });
 
