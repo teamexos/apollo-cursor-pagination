@@ -673,6 +673,50 @@ describe('getCatsByOwner root query', () => {
       ).not.toEqual(null);
     });
 
+    it('paginates asc null values', async () => {
+      const pageCount = 3;
+      const pageSize = 5;
+      await catFactory.model.query().del();
+
+      await Promise.all(
+        Array(pageSize * pageCount)
+          .fill(0)
+          .map(() => catFactory.model.query().insert(catFactory.mockFn())),
+      );
+
+      let cursor2;
+      // eslint-disable-next-line no-plusplus
+      for (let i = 0; i < pageCount; i++) {
+        // eslint-disable-next-line no-await-in-loop
+        const page = await graphqlQuery(
+          app,
+          `
+            {
+              catsConnection(
+                first: ${pageSize}
+                orderBy: "lastName"
+                orderDirection: asc
+                ${cursor2 ? `after: "${cursor2}"` : ''}
+              ) {
+                edges {
+                  cursor
+                  node {
+                    id
+                    lastName
+                  }
+                }
+                totalCount
+              }
+            }
+          `,
+        );
+        const catEdges = page.body.data.catsConnection.edges;
+        expect(catEdges).toHaveLength(pageSize);
+
+        cursor2 = catEdges[catEdges.length - 1].cursor;
+      }
+    });
+
     it('paginates segmentating in the middle of null values', async () => {
       const [unnamedCat1, unnamedCat2] = await catFactory.model
         .query()
