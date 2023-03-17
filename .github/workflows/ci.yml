@@ -34,7 +34,7 @@ jobs:
           npm run build
       - name: Cache Dist
         id: cache-dist
-        users: actions/cache@v3
+        uses: actions/cache@v3
         with:
           path: dist
           key: dist-${{ github.sha}}
