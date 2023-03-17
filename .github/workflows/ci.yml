@@ -34,6 +34,7 @@ jobs:
           cd tests/test-app
           npm install
       - name: Build
+        run: |
           npm run build
       - name: Cache Dist
         id: cache-dist
