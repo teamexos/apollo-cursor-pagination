@@ -1,0 +1,79 @@
+name: CI
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16.13.2 # match .tool-versions
+      - name: Cache Root Node Modules
+        id: cache-node-root
+        uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: node-modules-${{ hashFiles('package-lock.json') }}
+      - name: Cache Test App Node Modules
+        id: cache-node-test-app
+        uses: actions/cache@v3
+        with:
+          path: tests/test-app/node_modules
+          key: node-modules-${{ hashFiles('tests/test-app/package-lock.json') }}
+      - name: Install
+        run: |
+          npm ci
+          npm install
+          cd tests/test-app
+          npm install
+      - name: Build
+        run: |
+          npm run build
+      - name: Cache Dist
+        id: cache-dist
+        uses: actions/cache@v3
+        with:
+          path: dist
+          key: dist-${{ github.sha}}
+
+  test-lint-format:
+    name: Test, Lint, and Format
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    needs: [build]
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16.13.2 # match .tool-versions
+      - uses: actions/cache@v3
+        id: restore-root-node-modules
+        with:
+          path: node_modules
+          key: node-modules-${{ hashFiles('package-lock.json') }}
+      - uses: actions/cache@v3
+        id: restore-test-app-node-modules
+        with:
+          path: tests/test-app/node_modules
+          key: node-modules-${{ hashFiles('tests/test-app/package-lock.json') }}
+      - uses: actions/cache@v3
+        id: restore-build
+        with:
+          path: dist
+          key: dist-${{ github.sha}}
+      - name: Test
+        run: |
+          npm run test
+      - name: Lint
+        run: |
+          npm run lint
+      - name: Format-Check
+        run: |
+          npm run format-check
