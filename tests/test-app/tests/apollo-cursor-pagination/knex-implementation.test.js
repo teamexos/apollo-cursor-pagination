@@ -1,3 +1,4 @@
+const consoleWarnMock = jest.spyOn(console, 'warn').mockImplementation();
 const _ = require('../helpers/database'); // eslint-disable-line no-unused-vars
 const { start, stop, graphqlQuery } = require('../helpers/integration-server');
 const catFactory = require('../factories/mocks/cat');
@@ -508,6 +509,81 @@ describe('getCatsByOwner root query', () => {
       expect(
         response2.body.data.catsConnection.edges.map((e) => e.node.id),
       ).toEqual([cat1, cat2].map((c) => c.id).map((id) => id.toString()));
+    });
+
+    it('verify that pagination and sorting with single element array warns about unexpected behavior', async () => {
+      await catFactory.model.query().del();
+      cat1 = await catFactory.model.query().insert({
+        ...catFactory.mockFn(),
+        id: 1,
+        name: 'Keyboard Cat 2',
+        lastName: 'C',
+      });
+      cat2 = await catFactory.model.query().insert({
+        ...catFactory.mockFn(),
+        id: 2,
+        name: 'Keyboard Cat 3',
+        lastName: 'A',
+      });
+      cat3 = await catFactory.model.query().insert({
+        ...catFactory.mockFn(),
+        id: 3,
+        name: 'Keyboard Cat 2',
+        lastName: 'B',
+      });
+      const cat4 = await catFactory.model.query().insert({
+        ...catFactory.mockFn(),
+        id: 4,
+        name: 'Keyboard Cat 1',
+        lastName: 'A',
+      });
+
+      const query = `
+        {
+          catsConnection(
+            first: 2
+            orderByMultiple: ["name"]
+            orderDirectionMultiple: [asc]
+          ) {
+            edges {
+              cursor
+              node {
+                id
+              }
+            }
+          }
+        }
+      `;
+      const response = await graphqlQuery(app, query);
+
+      expect(response.body.errors).not.toBeDefined();
+
+      const cursor = response.body.data.catsConnection.edges[1].cursor;
+
+      const query2 = `
+        {
+          catsConnection(
+            after: "${cursor}"
+            orderByMultiple: ["name"]
+            orderDirectionMultiple: [asc]
+          ) {
+            edges {
+              cursor
+              node {
+                id
+              }
+            }
+          }
+        }
+      `;
+      const response2 = await graphqlQuery(app, query2);
+
+      expect(response2.body.errors).not.toBeDefined();
+      expect(consoleWarnMock).toBeCalledWith(
+        'Warning: array of sortBy with only 1 element can cause unexpected behavior, instead use a string to sortBy one element or specify more than 1 element in the sortBy array',
+      );
+
+      consoleWarnMock.mockRestore();
     });
 
     it('can sort by multiple columns using reverse pagination', async () => {

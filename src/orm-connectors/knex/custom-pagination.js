@@ -63,6 +63,19 @@ const buildRemoveNodesFromBeforeOrAfter = (beforeOrAfter) => {
     const data = getDataFromCursor(cursorOfInitialNode);
     const [id, columnValue] = data;
 
+    // Only log if has after in the query
+    // and if order column is an array of a single element
+    const shouldLogArrayWarning =
+      beforeOrAfter === 'before' &&
+      Array.isArray(orderColumn) &&
+      orderColumn.length === 1;
+
+    if (shouldLogArrayWarning) {
+      console.warn(
+        'Warning: array of sortBy with only 1 element can cause unexpected behavior, instead use a string to sortBy one element or specify more than 1 element in the sortBy array',
+      );
+    }
+
     const initialValue = nodesAccessor.clone();
     const executeFilterQuery = (query) =>
       operateOverScalarOrArray(
