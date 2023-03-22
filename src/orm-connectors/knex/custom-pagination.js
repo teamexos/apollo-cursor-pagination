@@ -72,7 +72,7 @@ const buildRemoveNodesFromBeforeOrAfter = (beforeOrAfter) => {
 
     if (shouldLogArrayWarning) {
       console.warn(
-        'Warning: array of sortBy with only 1 element can cause unexpected behavior, instead use a string to sortBy one element or specify more than 1 element in the sortBy array',
+        'Warning: array of sortBy with only 1 element can cause unexpected behavior when combined with pagination, instead use a string to sortBy one element or specify more than 1 element in the sortBy array',
       );
     }
 
