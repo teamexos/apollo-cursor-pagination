@@ -1,0 +1,10 @@
+# Will be resolved with https://athletesperformance.atlassian.net/browse/MA-4890
+
+eslint-config-airbnb-base
+eslint-plugin-import
+
+# Heavily utilized (millions of downloads each week)
+
+babel-core
+@semantic-release/npm
+regenerator-runtime
