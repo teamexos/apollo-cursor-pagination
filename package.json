@@ -2,10 +2,7 @@
   "name": "@teamexos/apollo-cursor-pagination",
   "version": "2.0.3",
   "description": "Relay's Connection implementation for Apollo Server GraphQL library with primary key support for cursor generation.",
-  "keywords": [
-    "apollo",
-    "pagination"
-  ],
+  "keywords": ["apollo", "pagination"],
   "main": "dist/index.js",
   "author": "Daniel Merrill <daniel@terminal.co>",
   "license": "MIT",
@@ -13,9 +10,12 @@
   "scripts": {
     "build": "babel src --out-dir dist",
     "release": "npm run build && npm publish && git push origin head --tags",
-    "lint": "eslint . --ext .js",
-    "format": "prettier --write \"**/*.+(js|json|ts|vue|graphql|html|md)\"",
-    "format-check": "prettier --check \"**/*.+(js|json|ts|vue|graphql|html|md)\"",
+    "format": "biome format",
+    "format:fix": "biome format --write",
+    "lint": "biome lint",
+    "lint:fix": "biome lint --write",
+    "check": "biome check",
+    "check:fix": "biome check --write",
     "test": "npm run test --prefix tests/test-app"
   },
   "devDependencies": {
@@ -23,6 +23,7 @@
     "@babel/core": "^7.1.2",
     "@babel/node": "^7.0.0",
     "@babel/preset-env": "^7.1.0",
+    "@biomejs/biome": "1.9.4",
     "@semantic-release/commit-analyzer": "^9.0.2",
     "@semantic-release/exec": "^6.0.3",
     "@semantic-release/github": "^8.0.2",
@@ -30,14 +31,7 @@
     "@semantic-release/release-notes-generator": "^10.0.3",
     "babel-core": "^7.0.0-bridge.0",
     "babel-jest": "^23.6.0",
-    "eslint": "^8.35.0",
-    "eslint-config-airbnb-base": "^13.1.0",
-    "eslint-config-prettier": "^8.7.0",
-    "eslint-plugin-import": "^2.27.5",
-    "eslint-plugin-jest": "^21.25.0",
-    "eslint-plugin-prettier": "^4.2.1",
     "jest": "^23.6.0",
-    "prettier": "^2.8.4",
     "regenerator-runtime": "^0.12.1",
     "semantic-release": "^19.0.5"
   },
@@ -54,9 +48,7 @@
     "registry": "https://npm.pkg.github.com"
   },
   "release": {
-    "branches": [
-      "main"
-    ],
+    "branches": ["main"],
     "plugins": [
       "@semantic-release/commit-analyzer",
       "@semantic-release/release-notes-generator",
