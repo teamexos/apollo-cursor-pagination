@@ -3,7 +3,7 @@
   "vcs": { "enabled": false, "clientKind": "git", "useIgnoreFile": true },
   "files": {
     "ignoreUnknown": false,
-    "ignore": [".vscode"],
+    "ignore": [".vscode", "package.json", "dist"],
     "maxSize": 3000000
   },
   "formatter": {
