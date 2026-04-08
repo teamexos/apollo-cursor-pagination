@@ -86,14 +86,20 @@ const buildRemoveNodesFromBeforeOrAfter = (beforeOrAfter) => {
               isAggregateFn && isAggregateFn(orderColumn[index - 1])
                 ? 'orHavingRaw'
                 : 'orWhereRaw';
-            const nested = prev[operation](`(?? = ? and ?? ${comparator} ?)`, [
-              formatColumnIfAvailable(orderColumn[index - 1], formatColumnFn),
-              values[index - 1],
-              formatColumnIfAvailable(orderBy, formatColumnFn),
-              values[index],
-            ]);
-
-            return nested;
+            // All preceding columns must match the cursor values, then the current column is compared.
+            // e.g. for [firstName, lastName, id] at index=2: (firstName = F AND lastName = L AND id > I)
+            const precedingCols = orderColumn.slice(0, index);
+            return prev[operation](
+              `(${precedingCols.map(() => '?? = ?').join(' and ')} and ?? ${comparator} ?)`,
+              [
+                ...precedingCols.flatMap((col, i) => [
+                  formatColumnIfAvailable(col, formatColumnFn),
+                  values[i],
+                ]),
+                formatColumnIfAvailable(orderBy, formatColumnFn),
+                values[index],
+              ],
+            );
           }
 
           if (currValue === null || currValue === undefined) {
