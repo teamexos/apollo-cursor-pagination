@@ -86,12 +86,30 @@ const buildRemoveNodesFromBeforeOrAfter = (beforeOrAfter) => {
               isAggregateFn && isAggregateFn(orderColumn[index - 1])
                 ? 'orHavingRaw'
                 : 'orWhereRaw';
-            const nested = prev[operation](`(?? = ? and ?? ${comparator} ?)`, [
-              formatColumnIfAvailable(orderColumn[index - 1], formatColumnFn),
-              values[index - 1],
-              formatColumnIfAvailable(orderBy, formatColumnFn),
-              values[index],
-            ]);
+            // Build equality conditions for ALL preceding columns (0..index-1), not just the immediately
+            // preceding one. Without this, a 3-column sort like [firstName, lastName, id] generates the
+            // wrong condition at index=2:
+            //   (lastName = L AND id > I)  -- missing firstName = F
+            // when it should be:
+            //   (firstName = F AND lastName = L AND id > I)
+            const eqParts = orderColumn
+              .slice(0, index)
+              .map(() => '?? = ?')
+              .join(' and ');
+            const eqParams = orderColumn
+              .slice(0, index)
+              .flatMap((col, i) => [
+                formatColumnIfAvailable(col, formatColumnFn),
+                values[i],
+              ]);
+            const nested = prev[operation](
+              `(${eqParts} and ?? ${comparator} ?)`,
+              [
+                ...eqParams,
+                formatColumnIfAvailable(orderBy, formatColumnFn),
+                values[index],
+              ],
+            );
 
             return nested;
           }
